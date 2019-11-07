@@ -9,7 +9,9 @@ class EuclideanClassifier(BaseEstimator, ClassifierMixin):
         self.n_samples = None
         self.n_features = None
         self.n_classes = None
-        self.classes = None
+        self.idx2class = None
+        self.class2idx = None
+
 
     def fit(self, X, y):
 
@@ -24,29 +26,32 @@ class EuclideanClassifier(BaseEstimator, ClassifierMixin):
 
         fit always returns self.
         """
-        X_train = X
-        y_train = y
+
         n_samples, n_features = X.shape
         n_classes = len(set(y))
-        classes = sorted(list(set(y)))
+        idx2class = sorted(list(set(y)))
+
+        self.class2idx = {}
+        for cl in idx2class:
+            self.class2idx[cl] = idx2class.index(cl)
 
         self.n_samples = n_samples
         self.n_features = n_features
         self.n_classes = n_classes
 
-        digit_count = np.zeros(n_classes)
-        digit_mean = np.zeros((n_classes, n_features))
+        cnt = np.zeros(n_classes)
+        mean_val = np.zeros((n_classes, n_features))
 
         for i in range(n_samples):
-            digit = y_train[i]
-            digit_count[digit] = digit_count[digit] + 1
-            digit_mean[digit] = digit_mean[digit] + X_train[i]
+            idx = self.class2idx[y[i]]
+            cnt[idx] = cnt[idx] + 1
+            mean_val[idx] = mean_val[idx] + X[i]
 
         # Digit based on Mean
-        for digit in range(n_classes):
-            digit_mean[digit] = digit_mean[digit] / digit_count[digit]
+        for i in range(n_classes):
+            mean_val[i] = mean_val[i] / cnt[i]
 
-        self.X_mean_ = digit_mean
+        self.X_mean_ = mean_val
 
         return self
 
@@ -56,12 +61,7 @@ class EuclideanClassifier(BaseEstimator, ClassifierMixin):
         Make predictions for X based on the
         euclidean distance from self.X_mean_
         """
-
-        n_samples = self.n_samples
-        n_features = self.n_features
-        n_classes = self.n_classes
         n_test_samples, _ = X.shape
-
         C = [np.argmin(np.linalg.norm(self.X_mean_ - X[i], axis = 1)) for i in range(n_test_samples)]
 
         return C
@@ -72,8 +72,8 @@ class EuclideanClassifier(BaseEstimator, ClassifierMixin):
         Return accuracy score on the predictions
         for X based on ground truth y
         """
-
         n_test_samples, _ = X.shape
-        accuracy = sum(np.equal(self.predict(X), y)) / n_test_samples
+        y2idx = [self.class2idx[cl] for cl in y]
+        accuracy = sum(np.equal(self.predict(X), y2idx)) / n_test_samples
 
         return accuracy
