@@ -1,4 +1,5 @@
 from sklearn.base import BaseEstimator, ClassifierMixin
+from collections import defaultdict
 import numpy as np
 
 class EuclideanClassifier(BaseEstimator, ClassifierMixin):
@@ -31,7 +32,8 @@ class EuclideanClassifier(BaseEstimator, ClassifierMixin):
         n_classes = len(set(y))
         idx2class = sorted(list(set(y)))
 
-        self.class2idx = {}
+        self.class2idx = defaultdict(lambda: None, {})
+
         for cl in idx2class:
             self.class2idx[cl] = idx2class.index(cl)
 
