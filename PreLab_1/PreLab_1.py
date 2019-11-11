@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from sklearn.model_selection import cross_val_score, learning_curve
+from sklearn.decomposition import PCA
 from euclidean_classifier import EuclideanClassifier
 
 def readData(data_type):
@@ -69,14 +70,16 @@ def main():
     # plt.imshow(digit_131)
 
     # STEP 3 - plot one sample for each digit 0-9
-    # for digit in range(n_classes):
-    #     rand = random.randint(0, n_samples)
-    #     while (y_train[rand] != digit):
-    #         rand = random.randint(0, n_samples)
-    #     dig = np.reshape(X_train[rand],(16,16))
-    #     plt.figure()
-    #     plt.title("Random Digits")
-    #     plt.imshow(dig)
+    # fig, axs = plt.subplots(2, 5)
+    # fig.suptitle("Random Digits")
+    for digit in range(n_classes):
+        rand = random.randint(0, n_samples)
+        while (y_train[rand] != digit):
+            rand = random.randint(0, n_samples)
+        dig = np.reshape(X_train[rand],(16,16))
+        # axs[digit // 5, digit % 5].imshow(dig)
+        # axs[digit // 5, digit % 5].axis("off")
+        # axs[digit // 5, digit % 5].set_title(str(digit))
 
     digit_count = np.zeros(n_classes)
     digit_mean = np.zeros((n_classes, n_features))
@@ -90,12 +93,13 @@ def main():
     # STEP 9 (b)
 
     # Digit based on Mean
-    # plt.figure()
-    # plt.title("Mean Value Digits")
-    for digit in range(10):
+    # fig, axs = plt.subplots(2, 5)
+    # fig.suptitle("Mean Value Digits")
+    for digit in range(n_classes):
         digit_mean[digit] = digit_mean[digit] / digit_count[digit]
-    #     plt.subplot()
-    #     plt.imshow(np.reshape(digit_mean[digit],(16,16)))
+        # axs[digit // 5, digit % 5].imshow(np.reshape(digit_mean[digit],(16,16)))
+        # axs[digit // 5, digit % 5].axis("off")
+        # axs[digit // 5, digit % 5].set_title(str(digit))
 
     # STEP 4 & 7
     digit_mean_zero = np.reshape(digit_mean[0],(16,16))
@@ -111,7 +115,7 @@ def main():
     # STEP 9 (a)
 
     # Digit based on Variance
-    for digit in range(10):
+    for digit in range(n_classes):
         digit_var[digit] = digit_var[digit] / (digit_count[digit] - 1)
 
     # STEP 5 & 8
@@ -123,10 +127,10 @@ def main():
 
     # STEP 10
 
-    digit_101 = np.reshape(X_test[101],(16,16))
-    plt.figure()
-    plt.title("Digit number 101")
-    plt.imshow(digit_101)
+    # digit_101 = np.reshape(X_test[101],(16,16))
+    # plt.figure()
+    # plt.title("Digit number 101")
+    # plt.imshow(digit_101)
     digit_101_pred = np.argmin(np.linalg.norm(digit_mean - X_test[101], axis = 1))
     print("The result of the Euclidean Classifier on digit 101 is:", digit_101_pred)
 
@@ -147,9 +151,11 @@ def main():
     y = np.concatenate((y_train, y_test), axis = 0)
 
     average_score = np.mean(cross_val_score(EuclideanClassifier(), X, y, cv = 5))
-    print("The average score using 5-fold-cross-validation is:", average_score)
+    print("The average score using 5-fold cross-validation is:", average_score)
 
-    plot_learning_curve(clf, "Learning Curves", X_train, y_train, (0.7, 1.01), cv = 5, n_jobs= 4)
+    # plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
+
+    principalComponents = PCA(n_components=2).fit_transform(X)
 
 
 if __name__ == "__main__" :
