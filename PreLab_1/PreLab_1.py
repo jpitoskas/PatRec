@@ -64,22 +64,22 @@ def main():
     n_classes = 10
 
     # STEP 2 - plot 131st digit
-    # digit_131 = np.reshape(X_train[131],(16,16))
-    # plt.figure()
-    # plt.title("Digit number 131")
-    # plt.imshow(digit_131)
+    digit_131 = np.reshape(X_train[131],(16,16))
+    plt.figure()
+    plt.title("Digit number 131")
+    plt.imshow(digit_131)
 
     # STEP 3 - plot one sample for each digit 0-9
-    # fig, axs = plt.subplots(2, 5)
-    # fig.suptitle("Random Digits")
+    fig, axs = plt.subplots(2, 5)
+    fig.suptitle("Random Digits")
     for digit in range(n_classes):
-        rand = random.randint(0, n_samples)
+        rand = random.randint(0, n_samples-1)
         while (y_train[rand] != digit):
-            rand = random.randint(0, n_samples)
+            rand = random.randint(0, n_samples-1)
         dig = np.reshape(X_train[rand],(16,16))
-        # axs[digit // 5, digit % 5].imshow(dig)
-        # axs[digit // 5, digit % 5].axis("off")
-        # axs[digit // 5, digit % 5].set_title(str(digit))
+        axs[digit // 5, digit % 5].imshow(dig)
+        axs[digit // 5, digit % 5].axis("off")
+        axs[digit // 5, digit % 5].set_title(str(digit))
 
     digit_count = np.zeros(n_classes)
     digit_mean = np.zeros((n_classes, n_features))
@@ -93,19 +93,19 @@ def main():
     # STEP 9 (b)
 
     # Digit based on Mean
-    # fig, axs = plt.subplots(2, 5)
-    # fig.suptitle("Mean Value Digits")
+    fig, axs = plt.subplots(2, 5)
+    fig.suptitle("Mean Value Digits")
     for digit in range(n_classes):
         digit_mean[digit] = digit_mean[digit] / digit_count[digit]
-        # axs[digit // 5, digit % 5].imshow(np.reshape(digit_mean[digit],(16,16)))
-        # axs[digit // 5, digit % 5].axis("off")
-        # axs[digit // 5, digit % 5].set_title(str(digit))
+        axs[digit // 5, digit % 5].imshow(np.reshape(digit_mean[digit],(16,16)))
+        axs[digit // 5, digit % 5].axis("off")
+        axs[digit // 5, digit % 5].set_title(str(digit))
 
     # STEP 4 & 7
     digit_mean_zero = np.reshape(digit_mean[0],(16,16))
-    # plt.figure()
-    # plt.title("Zero Mean Value")
-    # plt.imshow(digit_mean_zero)
+    plt.figure()
+    plt.title("Zero Mean Value")
+    plt.imshow(digit_mean_zero)
     print("The mean value of pixel (10,10) of 0 is:", digit_mean_zero[10][10])
 
     for i in range(n_samples):
@@ -120,18 +120,25 @@ def main():
 
     # STEP 5 & 8
     digit_var_zero = np.reshape(digit_var[0],(16,16))
-    # plt.figure()
-    # plt.title("Zero Variance Value")
-    # plt.imshow(digit_var_zero)
+    plt.figure()
+    plt.title("Zero Variance Value")
+    plt.imshow(digit_var_zero)
     print("The variance value of pixel (10,10) of 0 is:", digit_var_zero[10][10])
+
+    # STEP 6
+
+    print("The mean value of 0 is: (first 4 numbers)", digit_mean[0][0:4])
+    print("The variance value of 0 is: (first 4 numbers)", digit_var[0][0:4])
+
+    for digit in range(n_classes):
+        print("The mean value of", digit, "is: (first number only)", digit_mean[digit][0])
+        print("The variance value of", digit, "is: (first number only)", digit_var[digit][0])
 
     # STEP 10
 
-    # digit_101 = np.reshape(X_test[101],(16,16))
-    # plt.figure()
-    # plt.title("Digit number 101")
-    # plt.imshow(digit_101)
+    
     digit_101_pred = np.argmin(np.linalg.norm(digit_mean - X_test[101], axis = 1))
+    print("Actual value of digit 101:", y_test[101])
     print("The result of the Euclidean Classifier on digit 101 is:", digit_101_pred)
 
     # STEP 11
@@ -153,7 +160,7 @@ def main():
     average_score = np.mean(cross_val_score(EuclideanClassifier(), X, y, cv = 5))
     print("The average score using 5-fold cross-validation is:", average_score)
 
-    # plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
+    plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
 
     principalComponents = PCA(n_components=2).fit_transform(X)
 
