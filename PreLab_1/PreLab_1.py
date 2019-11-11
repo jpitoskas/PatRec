@@ -1,4 +1,5 @@
 import sklearn
+from scipy.spatial import Voronoi, voronoi_plot_2d
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,6 +7,7 @@ from collections import defaultdict
 from sklearn.model_selection import cross_val_score, learning_curve
 from sklearn.decomposition import PCA
 from euclidean_classifier import EuclideanClassifier
+
 
 def readData(data_type):
 
@@ -22,9 +24,9 @@ def readData(data_type):
 
     return np.asarray(features), np.asarray(digits)
 
-def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
-                        n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
-    
+
+def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None, n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
+
     plt.figure()
     plt.title(title)
     if ylim is not None:
@@ -52,6 +54,20 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
+def plot_decision_boundaries(points):
+
+    vor = Voronoi(points)
+    voronoi_plot_2d(vor,show_points=False, show_vertices=False)
+    plt.scatter(points[:,0], points[:,1], c=range(10), s=50, edgecolor = 'k')
+    cdict = {0 : 'red', 1 : 'blue', 2 : 'gold', 3 : 'purple', 4 : 'darkgreen', 5 : 'orange', 6 : 'lime', 7 : 'cyan', 8 : 'magenta', 9 : 'dimgray'}
+
+    for point,label in zip(points,range(10)):
+        plt.scatter(point[0], point[1], c=cdict[label], label = label, s = 500)
+        label += 1
+    plt.legend(prop={'size':20})
+    plt.title('Decision Boundaries', fontsize=40)
+
+    return
 
 def main():
 
@@ -75,7 +91,7 @@ def main():
     for digit in range(n_classes):
         rand = random.randint(0, n_samples)
         while (y_train[rand] != digit):
-            rand = random.randint(0, n_samples)
+            rand = random.randint(0, n_samples-1)
         dig = np.reshape(X_train[rand],(16,16))
         # axs[digit // 5, digit % 5].imshow(dig)
         # axs[digit // 5, digit % 5].axis("off")
@@ -145,17 +161,32 @@ def main():
 
     # STEP 13
 
+    # Euclidean Classifier
     clf = EuclideanClassifier()
     clf.fit(X_train, y_train)
+    # print(clf.score(X_test, y_test))
+
+    # 5-Fold Cross-Validation
     X = np.concatenate((X_train, X_test), axis = 0)
     y = np.concatenate((y_train, y_test), axis = 0)
-
     average_score = np.mean(cross_val_score(EuclideanClassifier(), X, y, cv = 5))
     print("The average score using 5-fold cross-validation is:", average_score)
 
-    # plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
 
-    principalComponents = PCA(n_components=2).fit_transform(X)
+    # PCA 256 to 2 dims => for Decision Boundaries visualization
+    X_train_reduced = PCA(n_components=2).fit_transform(X_train)
+    X_test_reduced = PCA(n_components=2).fit_transform(X_test)
+
+    clf2 = EuclideanClassifier()
+    clf2.fit(X_train_reduced, y_train)
+    # print(clf2.score(X_test_reduced, y_test))
+
+    # Plot Decision Boundaries for 2 dims
+    plot_decision_boundaries(clf2.X_mean_)
+
+    # 13.c
+    # Plot Learning Curve
+    plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
 
 
 if __name__ == "__main__" :

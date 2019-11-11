@@ -64,8 +64,8 @@ class EuclideanClassifier(BaseEstimator, ClassifierMixin):
         euclidean distance from self.X_mean_
         """
         n_test_samples, _ = X.shape
-        C = [np.argmin(np.linalg.norm(self.X_mean_ - X[i], axis = 1)) for i in range(n_test_samples)]
-
+        C = np.array([np.argmin(np.linalg.norm(self.X_mean_ - X[i], axis = 1)) for i in range(n_test_samples)])
+        
         return C
 
 
