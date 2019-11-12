@@ -23,7 +23,7 @@ def readData(data_type):
 
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
-    
+
     plt.figure()
     plt.title(title)
     if ylim is not None:
@@ -149,7 +149,8 @@ def main():
     average_score = np.mean(cross_val_score(EuclideanClassifier(), X, y, cv = 5))
     print("The average score using 5-fold-cross-validation is:", average_score)
 
-    plot_learning_curve(clf, "Learning Curves", X_train, y_train, (0.7, 1.01), cv = 5, n_jobs= 4)
+    print(len(y_train),len(y_test))
+    # plot_learning_curve(clf, "Learning Curves", X_train, y_train, (0.7, 1.01), cv = 5, n_jobs= 4)
 
 
 if __name__ == "__main__" :
