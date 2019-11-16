@@ -7,7 +7,8 @@ from collections import defaultdict
 from sklearn.model_selection import cross_val_score, learning_curve
 from sklearn.decomposition import PCA
 from euclidean_classifier import EuclideanClassifier
-from scipy.stats import multivariate_normal
+from naive_bayes_classifier import NaiveBayesClassifier
+from sklearn.naive_bayes import GaussianNB
 
 def readData(data_type):
 
@@ -78,73 +79,69 @@ def main():
     n_classes = 10
 
 
-    # Euclidean Classifier
-    clf = EuclideanClassifier()
-    clf.fit(X_train, y_train)
-    # print(clf.score(X_test, y_test))
+#     # Euclidean Classifier
+#     clf = EuclideanClassifier()
+#     clf.fit(X_train, y_train)
+#     # print(clf.score(X_test, y_test))
+#
+#     # 5-Fold Cross-Validation
+#     X = np.concatenate((X_train, X_test), axis = 0)
+#     y = np.concatenate((y_train, y_test), axis = 0)
+#     average_score = np.mean(cross_val_score(EuclideanClassifier(), X, y, cv = 5))
+#     print("The average score using 5-fold cross-validation is:", average_score)
+#
+#
+#     # PCA 256 to 2 dims => for Decision Boundaries visualization
+#     X_train_reduced = PCA(n_components=2).fit_transform(X_train)
+#     X_test_reduced = PCA(n_components=2).fit_transform(X_test)
+#
+#     clf2 = EuclideanClassifier()
+#     clf2.fit(X_train_reduced, y_train)
+#     # print(clf2.score(X_test_reduced, y_test))
+#
+#     # Plot Decision Boundaries for 2 dims
+#     # plot_decision_boundaries(clf2.X_mean_)
+#
+#     # Plot Learning Curve
+#     # plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
+#
+#
+#     # Step 14 - a priori probabilities
+#     labels, counts = np.unique(y_train, return_counts = True)
+#     a_priori = defaultdict(lambda : 0, {})
+#     for label, cnt in zip(labels, counts):
+#         a_priori[label] = cnt / y_train.size
+#
+#     digit_count = np.zeros(n_classes)
+#     digit_mean = np.zeros((n_classes, n_features))
+#     digit_var = np.zeros((n_classes, n_features))
+#
+# #   Digit Count and Mean
+#     for i in range(n_samples):
+#         digit = y_train[i]
+#         digit_count[digit] = digit_count[digit] + 1
+#         digit_mean[digit] = digit_mean[digit] + X_train[i]
+#
+#     for digit in range(n_classes):
+#         digit_mean[digit] = digit_mean[digit] / digit_count[digit]
+#
+# #   Digit Variance
+#     for i in range(n_samples):
+#         digit = y_train[i]
+#         digit_var[digit] = digit_var[digit] + (X_train[i] - digit_mean[digit])**2
+#
+#     for digit in range(n_classes):
+#         digit_var[digit] = digit_var[digit] / (digit_count[digit] - 1)
 
-    # 5-Fold Cross-Validation
-    X = np.concatenate((X_train, X_test), axis = 0)
-    y = np.concatenate((y_train, y_test), axis = 0)
-    average_score = np.mean(cross_val_score(EuclideanClassifier(), X, y, cv = 5))
-    print("The average score using 5-fold cross-validation is:", average_score)
+    clf = NaiveBayesClassifier(unitVar = True).fit(X_train, y_train)
+    print(clf.score(X_test, y_test))
+
+    print(GaussianNB().fit(X_train, y_train).score(X_test, y_test))
 
 
-    # PCA 256 to 2 dims => for Decision Boundaries visualization
-    X_train_reduced = PCA(n_components=2).fit_transform(X_train)
-    X_test_reduced = PCA(n_components=2).fit_transform(X_test)
-
-    clf2 = EuclideanClassifier()
-    clf2.fit(X_train_reduced, y_train)
-    # print(clf2.score(X_test_reduced, y_test))
-
-    # Plot Decision Boundaries for 2 dims
-    # plot_decision_boundaries(clf2.X_mean_)
-
-    # Plot Learning Curve
-    # plot_learning_curve(EuclideanClassifier(), "Learning Curves", X, y, cv = 5, n_jobs= 4)
 
 
-    # Step 14 - a priori probabilities
-    labels, counts = np.unique(y_train, return_counts = True)
-    a_priori = defaultdict(lambda : 0, {})
-    for label, cnt in zip(labels, counts):
-        a_priori[label] = cnt / y_train.size
 
-    digit_count = np.zeros(n_classes)
-    digit_mean = np.zeros((n_classes, n_features))
-    digit_var = np.zeros((n_classes, n_features))
-
-#   Digit Count and Mean
-    for i in range(n_samples):
-        digit = y_train[i]
-        digit_count[digit] = digit_count[digit] + 1
-        digit_mean[digit] = digit_mean[digit] + X_train[i]
-
-    for digit in range(n_classes):
-        digit_mean[digit] = digit_mean[digit] / digit_count[digit]
-
-#   Digit Variance
-    for i in range(n_samples):
-        digit = y_train[i]
-        digit_var[digit] = digit_var[digit] + (X_train[i] - digit_mean[digit])**2
-
-    for digit in range(n_classes):
-        digit_var[digit] = digit_var[digit] / (digit_count[digit] - 1)
-
-#   zero variance values are changed to epsilon
-    digit_var[digit_var == 0] = np.finfo(np.float32).eps
-
-    id = 0
-    acc = 0
-    for j in range(n_test_samples):
-        maxim = 0
-        for i in range(10):
-            prob = a_priori[i]*multivariate_normal.pdf(X_test[j], mean = digit_mean[i], cov = np.diag(digit_var[i]))
-            if ( prob >= maxim):
-                id = i
-        acc += (id == y_test[j])
-    print(4)
 if __name__ == "__main__" :
     main()
     plt.show()
