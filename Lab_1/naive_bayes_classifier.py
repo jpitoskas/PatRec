@@ -70,7 +70,8 @@ class NaiveBayesClassifier(BaseEstimator, ClassifierMixin):
         else:
             for idx in range(n_classes):
                 var_val[idx] = np.var(X[y == self.idx2class[idx]], axis = 0)
-            var_val[var_val == 0] = np.finfo(np.float32).eps
+            var_val += np.finfo(np.float32).eps
+            # var_val[var_val == 0] = np.finfo(np.float32).eps
 
         # Step 14 - a priori probabilities
         labels, counts = np.unique(y, return_counts = True)
