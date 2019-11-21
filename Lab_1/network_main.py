@@ -30,7 +30,7 @@ model = TwoLayerNet(D_in, H, D_out).double()
 criterion = torch.nn.MSELoss(reduction='sum')
 optimizer = torch.optim.SGD(model.parameters(), lr=1e-4)
 
-epochs = 2
+epochs = 5
 for epoch in range(epochs):
     for idx, data in enumerate(train_loader):
         # get the inputs
@@ -43,11 +43,10 @@ for epoch in range(epochs):
         y_pred = model(inputs)
 
         # Compute and print loss
-        print(y_pred.shape, labels.shape)
         loss = criterion(y_pred, labels)
         print(epoch, idx, loss.data)
-#
-# #       Zero gradients, perform a backward pass, and update the weights.
-#         optimizer.zero_grad()
-#         loss.backward()
-#         optimizer.step()
+
+#       Zero gradients, perform a backward pass, and update the weights.
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
