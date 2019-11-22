@@ -58,6 +58,7 @@ for epoch in range(epochs):
         # Compute and print loss
         # print(y_pred.shape, labels.shape)
         loss = criterion(y_pred, labels)
+        print(epoch, idx, loss.data[0])
 
 #       Zero gradients, perform a backward pass, and update the weights.
         optimizer.zero_grad()
