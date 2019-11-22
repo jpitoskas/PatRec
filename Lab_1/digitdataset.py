@@ -11,8 +11,8 @@ class DigitDataset(Dataset):
         self.datatype = datatype
         xy = np.loadtxt('./pr_lab1_2016-17_data/' + datatype + '.txt')
         self.len = xy.shape[0]
-        self.x_data = torch.from_numpy(xy[:, 1:]).to(device)
-        self.y_data = torch.from_numpy(xy[:, 0]).to(device)
+        self.x_data = torch.from_numpy(xy[:, 1:]).to(device).float()
+        self.y_data = torch.from_numpy(xy[:, 0]).to(device).long()
 
 
     def __getitem__(self, index):
