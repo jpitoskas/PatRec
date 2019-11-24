@@ -3,3 +3,4 @@
 */__pycache__/
 *.docx
 */.ipynb_checkpoints/
+*/train.model
