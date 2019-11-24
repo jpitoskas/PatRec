@@ -21,3 +21,6 @@ class DigitDataset(Dataset):
 
     def __len__(self):
         return self.len
+
+    def splitDataset(self):
+        DigitDataset('train', 'cpu')

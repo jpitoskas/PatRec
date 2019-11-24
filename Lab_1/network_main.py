@@ -6,7 +6,7 @@ from digitdataset import DigitDataset
 from twolayernn import TwoLayerNet
 
 # DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-DEVICE = "cpu"
+DEVICE = "cuda"
 if torch.cuda.is_available():
     print(  'DEVICE:', DEVICE,
             '\ncuda Version:', torch.version.cuda,
@@ -25,7 +25,7 @@ test_loader = DataLoader(test_set, batch_size=N, shuffle=True)
 
 # Construct our model by instantiating the class defined above
 model = TwoLayerNet(D_in, H, D_out)
-# model.to(DEVICE)
+model.to(DEVICE)
 
 # Construct our loss function and an Optimizer. The call to model.parameters()
 # in the SGD constructor will contain the learnable parameters of the two
@@ -42,12 +42,15 @@ def accuracy(y_hat, y):
 
 print("TRAINING...")
 
-epochs = 1000
+epochs = 10000
 for epoch in range(epochs):
     model.train()
     for idx, data in enumerate(train_loader):
         # get the inputs
         inputs, labels = data
+
+        inputs = inputs.to(DEVICE)
+        labels = labels.to(DEVICE)
 
         # wrap them in Variable
         inputs, labels = Variable(inputs), Variable(labels)
@@ -75,6 +78,10 @@ for epoch in range(epochs):
     with torch.no_grad():
         for data in test_loader:
             inputs, labels = data
+
+            inputs = inputs.to(DEVICE)
+            labels = labels.to(DEVICE)
+
             y_pred = model(inputs)
             # print(y_pred)
             # _, predicted = torch.max(y_pred.data, 1)
