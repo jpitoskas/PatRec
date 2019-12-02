@@ -1,5 +1,6 @@
 *.zip
 */pr_lab1_2016-17_data/
+*/pr_lab2_2019-20_data/
 */__pycache__/
 *.docx
 */.ipynb_checkpoints/
