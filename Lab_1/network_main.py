@@ -28,7 +28,7 @@ model = TwoLayerNet(D_in, H, D_out).to(DEVICE)
 # in the SGD constructor will contain the learnable parameters of the two
 # nn.Linear modules which are members of the model.
 criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=1e-4)
+optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, momentum=0.9)
 
 #function to calculate accuracy of model
 def accuracy(y_hat, y):
@@ -39,10 +39,10 @@ def train_and_val_model(epochs, criterion, optimizer, model, train, validation, 
 
     # TRAINING
 
-    if os.path.exists("./train.model"):
-        model.load_state_dict(torch.load("./train.model"))
-        # model.eval()
-        print("Loaded from pre-trained model")
+    # if os.path.exists("./train.model"):
+    #     model.load_state_dict(torch.load("./train.model"))
+    #     # model.eval()
+    #     print("Loaded from pre-trained model")
     
     print("TRAINING...")
 
@@ -81,9 +81,9 @@ def train_and_val_model(epochs, criterion, optimizer, model, train, validation, 
                 inputs, labels = data
                 y_pred = model(inputs)
                 acc += accuracy(y_pred, labels)
-        if (epoch % 100 == 0):
+        if (epoch % 100 == 0) or 1:
             print("Epoch:", epoch, "with loss:", loss.item(), "and accuracy on validation:", acc.item()/n_val)
-        if (epoch % 100 == 0):
+        if (epoch % 100 == 0) or 1:
             total_epochs.append(epoch)
             total_acc.append(acc.item()/n_val)
             total_loss.append(loss.item())
@@ -122,7 +122,7 @@ def test_model(model, test, n_test):
     print("Test set accuracy:", acc.item()/n_test)
 
 # Train and Validate model
-train_and_val_model(100, criterion, optimizer, model, train_loader, val_loader, n_val)
+train_and_val_model(15, criterion, optimizer, model, train_loader, val_loader, n_val)
 
 # Test model
 test_model(model, test_loader, n_test)
