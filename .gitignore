@@ -1,7 +1,6 @@
 *.zip
 */pr_lab1_2016-17_data/
 */pr_lab2_2019-20_data/
-*/pr_lab2_2019-20_help_scripts/
 */free-spoken-digit-dataset-master/
 */__pycache__/
 *.docx
